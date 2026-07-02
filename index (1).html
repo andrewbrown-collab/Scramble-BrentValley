@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brent Valley Scramble · The Card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --fairway: #0b3d24;
+    --fairway-deep: #072b19;
+    --fairway-mid: #145a34;
+    --moss: #1c5638;
+    --gold: #d4af37;
+    --gold-soft: #e8cf7a;
+    --cream: #f5f1e6;
+    --paper: #fbf9f2;
+    --ink: #10201a;
+    --muted: #8a9188;
+    --t1: #3a7bd5;
+    --t1-deep: #2456a0;
+    --t2: #d9662b;
+    --t2-deep: #b04a17;
+    --line: rgba(255,255,255,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background:
+      radial-gradient(circle at 20% 0%, #0f4a2c 0%, transparent 55%),
+      radial-gradient(circle at 85% 100%, #093a22 0%, transparent 50%),
+      linear-gradient(160deg, #072b19 0%, #0b3d24 45%, #062616 100%);
+    background-attachment: fixed;
+    color: var(--cream);
+    min-height: 100vh;
+    padding: 18px 14px 60px;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; }
+
+  /* ---------- HEADER ---------- */
+  .hero {
+    text-align: center;
+    padding: 22px 20px 26px;
+    position: relative;
+    border: 1px solid rgba(212,175,55,0.35);
+    border-radius: 20px;
+    background:
+      linear-gradient(180deg, rgba(28,86,56,0.55), rgba(7,43,25,0.3));
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+    overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.025) 0 2px, transparent 2px 22px);
+    pointer-events: none;
+  }
+  .flag-emoji { font-size: 2.4rem; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4)); }
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.4rem, 8vw, 4rem);
+    letter-spacing: 3px;
+    line-height: 0.92;
+    margin: 6px 0 2px;
+    background: linear-gradient(180deg, #fff 0%, var(--gold-soft) 60%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 2px 20px rgba(212,175,55,0.15);
+  }
+  .hero .meta {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--gold-soft);
+    letter-spacing: 0.3px;
+  }
+  .hero .stats {
+    display: flex; justify-content: center; gap: 0;
+    margin-top: 16px;
+    border-top: 1px solid rgba(212,175,55,0.2);
+    padding-top: 14px;
+  }
+  .hero .stat { flex: 1; padding: 0 8px; }
+  .hero .stat + .stat { border-left: 1px solid rgba(212,175,55,0.2); }
+  .hero .stat .n { font-family: 'Bebas Neue'; font-size: 1.7rem; letter-spacing: 1px; color: #fff; }
+  .hero .stat .l { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); }
+
+  /* ---------- SCOREBOARD ---------- */
+  .scoreboard { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+  .team-card {
+    border-radius: 18px;
+    padding: 18px 16px 16px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .team-card.leading { transform: translateY(-4px); }
+  .team-card.t1 { background: linear-gradient(155deg, var(--t1) 0%, var(--t1-deep) 100%); }
+  .team-card.t2 { background: linear-gradient(155deg, var(--t2) 0%, var(--t2-deep) 100%); }
+  .team-card.leading.t1 { box-shadow: 0 0 0 2px var(--gold), 0 16px 40px rgba(58,123,213,0.5); }
+  .team-card.leading.t2 { box-shadow: 0 0 0 2px var(--gold), 0 16px 40px rgba(217,102,43,0.5); }
+  .team-card .crown {
+    position: absolute; top: 10px; right: 12px;
+    font-size: 1.2rem; opacity: 0; transform: scale(0.5) rotate(-20deg);
+    transition: all 0.4s cubic-bezier(.2,1.4,.4,1);
+  }
+  .team-card.leading .crown { opacity: 1; transform: scale(1) rotate(0); }
+  .team-card .tag {
+    font-size: 0.6rem; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 2px; opacity: 0.75;
+  }
+  .team-card .who {
+    font-family: 'Fraunces', serif; font-weight: 900;
+    font-size: 1.25rem; margin: 2px 0 1px; line-height: 1.05;
+  }
+  .team-card .handi { font-size: 0.68rem; opacity: 0.85; min-height: 1em; font-weight: 500; }
+  .team-card .figures { display: flex; align-items: flex-end; gap: 14px; margin-top: 12px; }
+  .team-card .net-block .net {
+    font-family: 'Bebas Neue'; font-size: 3.2rem; line-height: 0.8; letter-spacing: 1px;
+  }
+  .team-card .net-block .net-lbl { font-size: 0.58rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.7; }
+  .team-card .gross-block { padding-bottom: 4px; }
+  .team-card .gross-block .g { font-size: 1rem; font-weight: 700; opacity: 0.85; }
+  .team-card .gross-block .g-lbl { font-size: 0.55rem; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.6; }
+  .team-card .topar {
+    display: inline-block; margin-top: 8px;
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.5px;
+    padding: 3px 10px; border-radius: 20px;
+    background: rgba(0,0,0,0.22); min-height: 1.4em;
+  }
+
+  /* ---------- LEADER TICKER ---------- */
+  .ticker {
+    text-align: center;
+    background: linear-gradient(180deg, rgba(212,175,55,0.14), rgba(212,175,55,0.05));
+    border: 1px solid rgba(212,175,55,0.4);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+  }
+  .ticker .lead {
+    font-family: 'Bebas Neue'; font-size: 1.5rem; letter-spacing: 1.5px;
+    color: #fff; line-height: 1;
+  }
+  .ticker .pot {
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: 0.85rem; color: var(--gold-soft); margin-top: 5px;
+  }
+
+  /* ---------- TABLE ---------- */
+  .card-frame {
+    background: var(--paper);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 18px 45px rgba(0,0,0,0.4);
+    color: var(--ink);
+  }
+  .card-frame .frame-head {
+    background: linear-gradient(160deg, var(--fairway) 0%, var(--fairway-deep) 100%);
+    color: var(--gold-soft);
+    padding: 12px 18px;
+    font-family: 'Fraunces', serif; font-style: italic; font-size: 0.9rem;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .card-frame .frame-head span:last-child { font-size: 0.72rem; color: var(--cream); opacity: 0.7; font-style: normal; letter-spacing: 1px; }
+  .table-scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+  thead th {
+    background: #ece4d0;
+    color: var(--fairway-deep);
+    font-size: 0.62rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 800;
+    padding: 9px 4px; position: sticky; top: 0;
+    border-bottom: 2px solid var(--gold);
+  }
+  th.wide { text-align: center; }
+  td { text-align: center; padding: 5px 4px; border-bottom: 1px solid #eae4d4; }
+  .hole-col { font-family: 'Bebas Neue'; font-size: 1.15rem; width: 40px; color: var(--fairway-deep); background: #f3eeddaa; letter-spacing: 1px; }
+  .par-col { font-weight: 700; color: var(--fairway); width: 34px; }
+  .yd-col { font-size: 0.72rem; color: var(--muted); width: 46px; }
+  .si-col { font-size: 0.62rem; color: #b3aa93; width: 30px; }
+  tbody tr:hover td { background: #fdfbf3; }
+
+  input.score {
+    width: 46px; padding: 7px 2px;
+    border: 1.5px solid #ddd5bf; border-radius: 9px;
+    text-align: center; font-size: 1rem; font-weight: 700; font-family: 'Inter';
+    background: #fff; color: var(--ink);
+    -moz-appearance: textfield; transition: all 0.15s;
+  }
+  input.score::-webkit-outer-spin-button, input.score::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  input.t1-in:focus { outline: none; border-color: var(--t1); box-shadow: 0 0 0 3px rgba(58,123,213,0.25); }
+  input.t2-in:focus { outline: none; border-color: var(--t2); box-shadow: 0 0 0 3px rgba(217,102,43,0.25); }
+  .cell-eagle input { background: #d9f0e0; border-color: #6cbf8a; color: #0b6b34; }
+  .cell-birdie input { background: #e9f6ee; border-color: #8fd0a6; color: #12813f; }
+  .cell-bogey input { background: #fbeee6; border-color: #e6b48f; color: #b8531a; }
+  .cell-double input { background: #f9e2da; border-color: #e08a63; color: #a3350f; }
+
+  .sub-row td { background: #efe8d4; font-weight: 800; font-size: 0.78rem; color: var(--fairway-deep); text-transform: uppercase; letter-spacing: 0.5px; }
+  .sub-row .hole-col { font-size: 0.8rem; font-family: 'Inter'; }
+  .tot-row td {
+    background: linear-gradient(160deg, var(--fairway), var(--fairway-deep));
+    color: var(--gold-soft); font-weight: 800; font-size: 0.95rem; border: none;
+    padding: 11px 4px;
+  }
+  .tot-row .hole-col { background: transparent; color: #fff; font-family: 'Bebas Neue'; font-size: 1.05rem; }
+
+  /* ---------- CONTROLS + NOTES ---------- */
+  .controls { display: flex; gap: 10px; justify-content: center; margin: 20px 0 10px; flex-wrap: wrap; }
+  button {
+    font-family: 'Inter'; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.5px;
+    padding: 11px 22px; border-radius: 30px; cursor: pointer;
+    border: 1px solid rgba(212,175,55,0.5);
+    background: rgba(212,175,55,0.12); color: var(--gold-soft);
+    transition: all 0.2s;
+  }
+  button:hover { background: var(--gold); color: var(--fairway-deep); border-color: var(--gold); }
+
+  .legend { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin: 12px 0; font-size: 0.68rem; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .dot { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+
+  .notes {
+    margin-top: 18px; font-size: 0.76rem; color: rgba(245,241,230,0.7);
+    background: rgba(0,0,0,0.2); border: 1px solid var(--line);
+    border-radius: 14px; padding: 16px 18px; line-height: 1.6;
+  }
+  .notes strong { color: var(--gold-soft); }
+  .notes ul { margin: 6px 0 0 16px; }
+  .notes li { margin: 4px 0; }
+
+  @media (max-width: 500px) {
+    .team-card .net-block .net { font-size: 2.5rem; }
+    .team-card .who { font-size: 1.05rem; }
+    input.score { width: 40px; }
+    .yd-col { display: none; }
+    th.yd-head { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="flag-emoji">⛳</div>
+    <h1>Brent Valley Scramble</h1>
+    <div class="meta">Hanwell &middot; The 2-Man Shootout</div>
+    <div class="stats">
+      <div class="stat"><div class="n">67</div><div class="l">Par</div></div>
+      <div class="stat"><div class="n">5,500</div><div class="l">Yards</div></div>
+      <div class="stat"><div class="n">18</div><div class="l">Holes</div></div>
+      <div class="stat"><div class="n">£80</div><div class="l">On the line</div></div>
+    </div>
+  </div>
+
+  <div class="scoreboard">
+    <div class="team-card t1" id="card-t1">
+      <div class="crown">👑</div>
+      <div class="tag">Team One</div>
+      <div class="who">Mike &amp; Cal</div>
+      <div class="handi">Scratch &middot; off the stick</div>
+      <div class="figures">
+        <div class="net-block">
+          <div class="net-lbl">Net</div>
+          <div class="net" id="t1-net">–</div>
+        </div>
+        <div class="gross-block">
+          <div class="g-lbl">Gross</div>
+          <div class="g" id="t1-gross">–</div>
+        </div>
+      </div>
+      <div class="topar" id="t1-topar"></div>
+    </div>
+
+    <div class="team-card t2" id="card-t2">
+      <div class="crown">👑</div>
+      <div class="tag">Team Two</div>
+      <div class="who">Andy &amp; Paul</div>
+      <div class="handi">Receiving 10 shots</div>
+      <div class="figures">
+        <div class="net-block">
+          <div class="net-lbl">Net</div>
+          <div class="net" id="t2-net">–</div>
+        </div>
+        <div class="gross-block">
+          <div class="g-lbl">Gross</div>
+          <div class="g" id="t2-gross">–</div>
+        </div>
+      </div>
+      <div class="topar" id="t2-topar"></div>
+    </div>
+  </div>
+
+  <div class="ticker">
+    <div class="lead" id="leader">Tee it up — enter your first hole</div>
+    <div class="pot" id="pot">Winner takes the £80 pot · £40 each</div>
+  </div>
+
+  <div class="card-frame">
+    <div class="frame-head">
+      <span>The Card · White Tees</span>
+      <span>SCRAMBLE</span>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Hole</th>
+            <th>Par</th>
+            <th class="yd-head">Yds</th>
+            <th>SI</th>
+            <th class="wide">Mike &amp; Cal</th>
+            <th class="wide">Andy &amp; Paul</th>
+          </tr>
+        </thead>
+        <tbody id="front"></tbody>
+        <tbody id="frontsub"></tbody>
+        <tbody id="back"></tbody>
+        <tbody id="backsub"></tbody>
+        <tbody id="grand"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><i class="dot" style="background:#8fd0a6"></i> Birdie</span>
+    <span><i class="dot" style="background:#6cbf8a"></i> Eagle+</span>
+    <span><i class="dot" style="background:#e6b48f"></i> Bogey</span>
+    <span><i class="dot" style="background:#e08a63"></i> Double+</span>
+  </div>
+
+  <div class="controls">
+    <button onclick="clearAll()">↺ Clear the card</button>
+  </div>
+
+  <div class="notes">
+    <strong>The rules of engagement</strong>
+    <ul>
+      <li><strong>Scramble:</strong> all four tee off, take the best ball, everyone plays from there. One team score per hole.</li>
+      <li><strong>The shots:</strong> Andy &amp; Paul get 10, taken off their gross at the end. Lowest <em>net</em> wins.</li>
+      <li><strong>The money:</strong> £20 a head, £80 pot, winning pair splits £40 each.</li>
+      <li><strong>The card:</strong> par, yardage and stroke index are Brent Valley's real White-tee numbers. Front 34 / back 33 / total 67, 5,500 yards.</li>
+      <li>Scores live in this browser only — one designated scorer keeps the card. Nothing syncs between phones.</li>
+    </ul>
+  </div>
+
+</div>
+
+<script>
+  const holes = [
+    { h:1,  par:4, si:9,  yd:332 },
+    { h:2,  par:4, si:5,  yd:362 },
+    { h:3,  par:4, si:13, yd:362 },
+    { h:4,  par:3, si:17, yd:127 },
+    { h:5,  par:4, si:3,  yd:440 },
+    { h:6,  par:4, si:1,  yd:446 },
+    { h:7,  par:3, si:15, yd:163 },
+    { h:8,  par:4, si:11, yd:291 },
+    { h:9,  par:4, si:7,  yd:370 },
+    { h:10, par:4, si:6,  yd:346 },
+    { h:11, par:4, si:10, yd:334 },
+    { h:12, par:3, si:14, yd:160 },
+    { h:13, par:3, si:12, yd:206 },
+    { h:14, par:4, si:2,  yd:367 },
+    { h:15, par:4, si:18, yd:277 },
+    { h:16, par:3, si:16, yd:172 },
+    { h:17, par:4, si:4,  yd:378 },
+    { h:18, par:4, si:8,  yd:367 },
+  ];
+  const ALLOWANCE = 10;
+  const scores = { t1:{}, t2:{} };
+
+  function cellCls(val, par) {
+    if (val === "" || val === undefined || isNaN(val)) return "";
+    const d = Number(val) - par;
+    if (d <= -2) return "cell-eagle";
+    if (d === -1) return "cell-birdie";
+    if (d === 1) return "cell-bogey";
+    if (d >= 2) return "cell-double";
+    return "";
+  }
+
+  function row(hole) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="hole-col">${hole.h}</td>
+      <td class="par-col">${hole.par}</td>
+      <td class="yd-col">${hole.yd}</td>
+      <td class="si-col">${hole.si}</td>
+      <td><input class="score t1-in" data-team="t1" data-hole="${hole.h}" data-par="${hole.par}" type="number" min="1" max="15" inputmode="numeric"></td>
+      <td><input class="score t2-in" data-team="t2" data-hole="${hole.h}" data-par="${hole.par}" type="number" min="1" max="15" inputmode="numeric"></td>`;
+    return tr;
+  }
+
+  holes.slice(0,9).forEach(h => document.getElementById("front").appendChild(row(h)));
+  holes.slice(9).forEach(h => document.getElementById("back").appendChild(row(h)));
+
+  document.getElementById("frontsub").innerHTML =
+    `<tr class="sub-row"><td class="hole-col">Out</td><td>34</td><td>2,893</td><td></td><td id="t1-out">–</td><td id="t2-out">–</td></tr>`;
+  document.getElementById("backsub").innerHTML =
+    `<tr class="sub-row"><td class="hole-col">In</td><td>33</td><td>2,607</td><td></td><td id="t1-in">–</td><td id="t2-in">–</td></tr>`;
+  document.getElementById("grand").innerHTML =
+    `<tr class="tot-row"><td class="hole-col">Total</td><td>67</td><td>5,500</td><td></td><td id="t1-tot">–</td><td id="t2-tot">–</td></tr>`;
+
+  function rangeSum(team, a, b) {
+    let s=0,c=0;
+    for (let i=a;i<=b;i++){ const v=scores[team][i]; if(v!==undefined&&v!==""&&!isNaN(v)){s+=+v;c++;} }
+    return {s,c};
+  }
+  function playedPar(team){ let p=0; holes.forEach(h=>{const v=scores[team][h.h]; if(v!==undefined&&v!==""&&!isNaN(v))p+=h.par;}); return p; }
+
+  function recalc() {
+    ["t1","t2"].forEach(team=>{
+      const out=rangeSum(team,1,9), inn=rangeSum(team,10,18);
+      const tot=out.s+inn.s, cnt=out.c+inn.c;
+      document.getElementById(team+"-out").textContent = out.c?out.s:"–";
+      document.getElementById(team+"-in").textContent = inn.c?inn.s:"–";
+      document.getElementById(team+"-tot").textContent = cnt?tot:"–";
+      document.getElementById(team+"-gross").textContent = cnt?tot:"–";
+      const net = team==="t2"? tot-ALLOWANCE : tot;
+      document.getElementById(team+"-net").textContent = cnt?net:"–";
+      const tp = document.getElementById(team+"-topar");
+      if (cnt) {
+        const diff = net - playedPar(team) + (team==="t2"? -ALLOWANCE+ALLOWANCE : 0);
+        const realDiff = net - playedPar(team);
+        let lbl = realDiff===0? "Level net" : (realDiff>0? "+"+realDiff+" net" : realDiff+" net");
+        tp.textContent = cnt===18 ? lbl : lbl+" · "+cnt+" holes in";
+      } else tp.textContent = "";
+    });
+    leaderUpdate();
+  }
+
+  function leaderUpdate() {
+    const t1=rangeSum("t1",1,18), t2=rangeSum("t2",1,18);
+    const L=document.getElementById("leader"), P=document.getElementById("pot");
+    const c1=document.getElementById("card-t1"), c2=document.getElementById("card-t2");
+    c1.classList.remove("leading"); c2.classList.remove("leading");
+
+    if(!t1.c && !t2.c){
+      L.textContent="Tee it up — enter your first hole";
+      P.textContent="Winner takes the £80 pot · £40 each";
+      return;
+    }
+    const n1=t1.s, n2=t2.s-ALLOWANCE;
+    const done=t1.c===18 && t2.c===18;
+    if(n1===n2){
+      L.textContent = done? "All square — playoff!" : "Dead level on net";
+      P.textContent = done? "Split the pot or sudden death" : "£80 pot · still anyone's";
+      return;
+    }
+    const t1up=n1<n2, m=Math.abs(n1-n2);
+    const name=t1up?"Mike & Cal":"Andy & Paul";
+    (t1up?c1:c2).classList.add("leading");
+    if(done){
+      L.textContent = `${name} win by ${m}`;
+      P.textContent = `${name} take the £80 — £40 each 🏆`;
+    } else {
+      L.textContent = `${name} lead by ${m}`;
+      P.textContent = "£80 pot · £40 each to the winners";
+    }
+  }
+
+  document.querySelectorAll("input.score").forEach(inp=>{
+    inp.addEventListener("input", e=>{
+      const t=e.target.dataset.team, h=+e.target.dataset.hole, par=+e.target.dataset.par;
+      let v=e.target.value;
+      if(v!=="") v=Math.max(1,Math.min(15,+v));
+      scores[t][h]=v; e.target.value = v===""?"":v;
+      e.target.closest("td").className = cellCls(v,par);
+      recalc();
+    });
+  });
+
+  function clearAll(){
+    if(!confirm("Wipe the whole card?")) return;
+    scores.t1={}; scores.t2={};
+    document.querySelectorAll("input.score").forEach(i=>{ i.value=""; i.closest("td").className=""; });
+    recalc();
+  }
+
+  recalc();
+</script>
+</body>
+</html>
